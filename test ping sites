@@ -1,0 +1,79 @@
+import csv
+import re
+from csv import DictReader
+from datetime import datetime
+import subprocess
+
+#below four list will use to save input file in three variables
+name=[]
+case=[]
+work_phone=[]
+c1=[]
+home_phone=[]
+c2=[]
+l3=[]
+c3=[]
+l4=[]
+c4=[]
+
+
+checktime = datetime.today().strftime('%Y-%m-%d %H:%M:%S')
+
+def readdata():
+    #sample path D:\\pythonproject\\site.csv
+    sitefile = "C:\\Users\\bebars\\Desktop\\Site.csv"
+    #to start read input file use open and option r mean read only
+    siteinputfile = open(sitefile, 'r', encoding='utf-8')
+    #Dictreader option allowed in csv library which imported when start code use to read csv file line by line
+    sitecsv_reader = DictReader(siteinputfile)
+    headers = sitecsv_reader.fieldnames
+    #start loop to split csv file line data to store in four list variable by use append option in list
+    for row in sitecsv_reader:
+        name.append(row[headers[10]])
+        case.append(row[headers[11]])
+        work_phone.append(row[headers[15]])
+        c1.append(row[headers[17]])
+        home_phone.append(row[headers[23]])
+        c2.append(row[headers[25]])
+        l3.append(row[headers[31]])
+        c3.append(row[headers[30]])
+        l4.append(row[headers[37]])
+        c4.append(row[headers[43]])
+
+
+def is_valid_ip(ip):
+    # This function checks if the input string is a valid IPv4 address
+    return re.match(r'^\d+\.\d+\.\d+\.\d+$', ip) is not None
+
+
+def ping_ip(ip):
+    # This function pings the given IP address and returns True if successful, False otherwise
+    try:
+        subprocess.run(['ping', '-n', '2', ip], check=True, stdout=subprocess.PIPE)
+        return True
+    except subprocess.CalledProcessError:
+        return False
+
+
+def main():
+    readdata()
+
+    for i in range(len(name)):
+        curr_name = name[i]
+        curr_work_phone = work_phone[i]
+        curr_c1= c1[i]
+        if is_valid_ip(curr_work_phone):
+            print(f"{curr_name}: {curr_work_phone} is an IP address. Starting ping...")
+            if ping_ip(curr_work_phone):
+                print(str(curr_name)+","+str(curr_work_phone)+str(curr_c1)+","+"Ping successful."+","+str(checktime))
+            else:
+                print(str(curr_name)+","+str(curr_work_phone)+str(curr_c1)+","+"Ping failed."+","+str(checktime))
+        else:
+            #print (curr_work_phone)
+            print(str(curr_name)+","+str(curr_work_phone)+str(curr_c1)+","+str(checktime)+"not valid ip")
+
+
+if __name__ == "__main__":
+    main()
+
+
